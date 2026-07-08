@@ -1,0 +1,11 @@
+{
+  "name": "memegen",
+  "version": "1.0.0",
+  "description": "A local browser-based meme generator and video editor",
+  "scripts": {
+    "dev": "npx serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -438,14 +438,30 @@
 
     function syncEditor() {
         const layer = getSelected();
-        if (!layer) { document.getElementById('selectedEditor').style.display = 'none'; return; }
+        const toolbarControls = document.getElementById('toolbarColorControls');
+        const toolbarPlaceholder = document.getElementById('toolbarColorPlaceholder');
+        const hexVal = document.getElementById('customColorHex');
+
+        if (!layer) {
+            document.getElementById('selectedEditor').style.display = 'none';
+            if (toolbarControls) toolbarControls.style.display = 'none';
+            if (toolbarPlaceholder) toolbarPlaceholder.style.display = 'block';
+            return;
+        }
         document.getElementById('selectedEditor').style.display = 'block';
+        if (toolbarControls) toolbarControls.style.display = 'block';
+        if (toolbarPlaceholder) toolbarPlaceholder.style.display = 'none';
+
         editContent.value = layer.text;
         fontSizeRange.value = layer.fontSize;
         fontSizeVal.textContent = layer.fontSize + 'px';
         rotationRange.value = layer.rotation;
         rotationVal.textContent = layer.rotation + '°';
-        customColor.value = layer.color.length === 7 ? layer.color : '#ffffff';
+
+        const colVal = layer.color.length === 7 ? layer.color : '#ffffff';
+        customColor.value = colVal;
+        if (hexVal) hexVal.textContent = colVal.toUpperCase();
+
         toggleBold.classList.toggle('active', layer.bold);
         toggleStroke.classList.toggle('active', layer.stroke);
         toggleCaps.classList.toggle('active', layer.caps);

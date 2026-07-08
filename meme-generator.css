@@ -2,6 +2,7 @@
    MEMEFORGE — stylesheet
    Palette: foundry gray + molten orange
    Display: Anton · Body: Inter · Mono: JetBrains Mono
+   v2 — upgraded cards, inputs & micro-interactions
    ============================================================ */
 
 :root {
@@ -35,6 +36,9 @@
 
   --shadow-panel: 0 10px 30px rgba(0, 0, 0, 0.45);
   --ring-ember: 0 0 0 3px rgba(240, 105, 31, 0.25);
+
+  --ease-forge: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 * {
@@ -195,12 +199,61 @@ header::after {
   flex: 1;
 }
 
+/* ============================================================
+   PANELS ("cards") — v2
+   Molten-edge cards: quiet at rest, a thin ember seam sweeps
+   across on hover and the whole card lifts a couple px.
+   ============================================================ */
+
 .panel {
+  position: relative;
   background: linear-gradient(180deg, var(--gray-900) 0%, var(--gray-850) 100%);
   border: 1px solid var(--gray-800);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
   padding: 20px;
+  overflow: hidden;
+  transition: transform 0.35s var(--ease-forge), box-shadow 0.35s var(--ease-forge), border-color 0.35s ease;
+  animation: panelRise 0.5s var(--ease-forge) both;
+}
+
+.layout > .panel:nth-child(1) { animation-delay: 0.02s; }
+.layout > .panel:nth-child(2) { animation-delay: 0.08s; }
+.layout > .panel:nth-child(3) { animation-delay: 0.14s; }
+
+@keyframes panelRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* thin seam of light that sweeps across the top edge on hover */
+.panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -30%;
+  width: 30%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--ember-400), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.panel:hover {
+  transform: translateY(-3px);
+  border-color: var(--gray-700);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(240, 105, 31, 0.08);
+}
+
+.panel:hover::before {
+  opacity: 1;
+  animation: seamSweep 1.4s ease-in-out infinite;
+}
+
+@keyframes seamSweep {
+  0%   { left: -30%; }
+  100% { left: 100%; }
 }
 
 /* ============================================================
@@ -238,6 +291,12 @@ header::after {
   background: var(--ember-500);
   border-radius: 2px;
   display: inline-block;
+  transition: height 0.25s var(--ease-snap), box-shadow 0.25s ease;
+}
+
+.section:hover .section-title::before {
+  height: 16px;
+  box-shadow: 0 0 8px rgba(240, 105, 31, 0.6);
 }
 
 label {
@@ -253,6 +312,8 @@ label {
 .range-val {
   color: var(--ember-400);
   font-weight: 600;
+  display: inline-block;
+  transition: transform 0.15s var(--ease-snap);
 }
 
 /* ============================================================
@@ -260,6 +321,7 @@ label {
    ============================================================ */
 
 .btn {
+  position: relative;
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 13.5px;
@@ -270,12 +332,14 @@ label {
   padding: 11px 14px;
   cursor: pointer;
   width: 100%;
-  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  overflow: hidden;
+  transition: transform 0.12s var(--ease-snap), background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .btn:hover {
   border-color: var(--gray-600);
   background: var(--gray-700);
+  transform: translateY(-1px);
 }
 
 .btn:active {
@@ -294,9 +358,23 @@ label {
   box-shadow: 0 6px 18px rgba(217, 84, 26, 0.35);
 }
 
+.btn.primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.35) 50%, transparent 80%);
+  transform: translateX(-120%);
+  transition: transform 0.6s var(--ease-forge);
+}
+
+.btn.primary:hover::after {
+  transform: translateX(120%);
+}
+
 .btn.primary:hover {
   background: linear-gradient(135deg, var(--ember-400), var(--ember-600));
   box-shadow: 0 8px 22px rgba(240, 105, 31, 0.45);
+  transform: translateY(-2px);
 }
 
 .btn.ghost {
@@ -310,6 +388,7 @@ label {
   border-color: var(--ember-500);
   color: var(--ember-400);
   background: rgba(240, 105, 31, 0.06);
+  border-style: solid;
 }
 
 .btn.small {
@@ -333,7 +412,8 @@ label {
 }
 
 /* ============================================================
-   SLIDERS
+   SLIDERS — v2
+   Fill trail behind the thumb + a glow that grows while dragging.
    ============================================================ */
 
 input[type="range"] {
@@ -344,6 +424,11 @@ input[type="range"] {
   background: var(--gray-700);
   outline: none;
   cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+input[type="range"]:hover {
+  box-shadow: 0 0 0 1px rgba(240, 105, 31, 0.15);
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -355,11 +440,18 @@ input[type="range"]::-webkit-slider-thumb {
   border: 2px solid var(--gray-950);
   box-shadow: 0 0 0 1px var(--ember-600), 0 0 10px rgba(240, 105, 31, 0.55);
   cursor: pointer;
-  transition: transform 0.12s ease;
+  transition: transform 0.15s var(--ease-snap), box-shadow 0.2s ease;
+  margin-top: -6px;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+  transform: scale(1.25);
+  box-shadow: 0 0 0 1px var(--ember-600), 0 0 16px rgba(240, 105, 31, 0.8);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.4);
+  box-shadow: 0 0 0 3px rgba(240, 105, 31, 0.25), 0 0 20px rgba(240, 105, 31, 0.9);
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -370,16 +462,27 @@ input[type="range"]::-moz-range-thumb {
   border: 2px solid var(--gray-950);
   box-shadow: 0 0 10px rgba(240, 105, 31, 0.55);
   cursor: pointer;
+  transition: transform 0.15s var(--ease-snap);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.25);
 }
 
 input[type="range"]::-moz-range-progress {
-  background: var(--ember-600);
+  background: linear-gradient(90deg, var(--ember-700), var(--ember-500));
+  height: 4px;
+  border-radius: 3px;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 3px;
 }
 
 /* ============================================================
-   EMOJI / STICKER GRID
+   EMOJI / STICKER GRID — v2
+   Staggered pop-in + a snappy bounce on hover/press.
    ============================================================ */
 
 .emoji-grid {
@@ -395,13 +498,30 @@ input[type="range"]::-moz-range-progress {
   font-size: 18px;
   padding: 8px 0;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s var(--ease-snap), box-shadow 0.15s ease;
+  animation: popIn 0.32s var(--ease-snap) both;
+}
+
+.emoji-grid button:nth-child(5n+1) { animation-delay: 0.02s; }
+.emoji-grid button:nth-child(5n+2) { animation-delay: 0.05s; }
+.emoji-grid button:nth-child(5n+3) { animation-delay: 0.08s; }
+.emoji-grid button:nth-child(5n+4) { animation-delay: 0.11s; }
+.emoji-grid button:nth-child(5n+5) { animation-delay: 0.14s; }
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .emoji-grid button:hover {
   border-color: var(--ember-500);
   background: rgba(240, 105, 31, 0.1);
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.12);
+  box-shadow: 0 4px 12px rgba(240, 105, 31, 0.25);
+}
+
+.emoji-grid button:active {
+  transform: translateY(0) scale(0.94);
 }
 
 /* ============================================================
@@ -435,6 +555,14 @@ input[type="range"]::-moz-range-progress {
   border-color: var(--ember-500);
   border-style: solid;
   opacity: 0.85;
+  transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+.canvas-frame:hover .corner-tl,
+.canvas-frame:hover .corner-br {
+  opacity: 1;
+  width: 28px;
+  height: 28px;
 }
 
 .corner-tl {
@@ -472,6 +600,12 @@ input[type="range"]::-moz-range-progress {
   pointer-events: none;
   text-transform: uppercase;
   line-height: 1.6;
+  animation: hintBreathe 2.6s ease-in-out infinite;
+}
+
+@keyframes hintBreathe {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 .canvas-caption {
@@ -482,7 +616,9 @@ input[type="range"]::-moz-range-progress {
 }
 
 /* ============================================================
-   LAYERS PANEL
+   LAYERS PANEL — v2 ("cards" that make up the layer list)
+   Each row eases in on arrival, slides + glows on hover, and
+   the active row gets a soft breathing ember ring.
    ============================================================ */
 
 .layers {
@@ -509,6 +645,7 @@ input[type="range"]::-moz-range-progress {
 }
 
 .layer-item {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -517,18 +654,81 @@ input[type="range"]::-moz-range-progress {
   border: 1px solid var(--gray-700);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
+  padding-left: 14px;
   font-size: 12.5px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s var(--ease-forge), box-shadow 0.2s ease;
+  animation: layerIn 0.3s var(--ease-forge) both;
+}
+
+#layerList .layer-item:nth-child(1) { animation-delay: 0.02s; }
+#layerList .layer-item:nth-child(2) { animation-delay: 0.06s; }
+#layerList .layer-item:nth-child(3) { animation-delay: 0.10s; }
+#layerList .layer-item:nth-child(4) { animation-delay: 0.14s; }
+#layerList .layer-item:nth-child(5) { animation-delay: 0.18s; }
+
+@keyframes layerIn {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* left accent bar, hidden until hover/active */
+.layer-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--ember-500);
+  transform: scaleY(0);
+  transition: transform 0.2s var(--ease-snap);
 }
 
 .layer-item:hover {
   border-color: var(--gray-600);
+  background: var(--gray-750, #2c2c30);
+  transform: translateX(2px);
+}
+
+.layer-item:hover::before {
+  transform: scaleY(0.5);
 }
 
 .layer-item.active {
   border-color: var(--ember-500);
   background: rgba(240, 105, 31, 0.08);
+  box-shadow: 0 0 0 1px rgba(240, 105, 31, 0.15), 0 4px 14px rgba(240, 105, 31, 0.15);
+  animation: layerActivePulse 2.4s ease-in-out infinite;
+}
+
+.layer-item.active::before {
+  transform: scaleY(1);
+  box-shadow: 0 0 8px rgba(240, 105, 31, 0.7);
+}
+
+@keyframes layerActivePulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(240, 105, 31, 0.15), 0 4px 14px rgba(240, 105, 31, 0.12); }
+  50%      { box-shadow: 0 0 0 1px rgba(240, 105, 31, 0.3), 0 4px 18px rgba(240, 105, 31, 0.28); }
+}
+
+/* delete / remove icon on a layer row, reveals on hover */
+.layer-item .layer-remove {
+  opacity: 0;
+  transform: translateX(-4px) scale(0.85);
+  transition: opacity 0.15s ease, transform 0.15s var(--ease-snap), color 0.15s ease;
+  color: var(--gray-500);
+  cursor: pointer;
+}
+
+.layer-item:hover .layer-remove {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.layer-item .layer-remove:hover {
+  color: #ff6b5e;
 }
 
 /* ============================================================
@@ -539,6 +739,12 @@ input[type="range"]::-moz-range-progress {
   margin-top: 18px;
   padding-top: 18px;
   border-top: 1px solid var(--gray-800);
+  animation: fadeInUp 0.28s var(--ease-forge) both;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 textarea#editContent {
@@ -552,13 +758,25 @@ textarea#editContent {
   font-family: var(--font-body);
   font-size: 13px;
   padding: 10px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+textarea#editContent:hover {
+  border-color: var(--gray-600);
 }
 
 textarea#editContent:focus {
   outline: none;
   border-color: var(--ember-500);
-  box-shadow: var(--ring-ember);
+  background: var(--gray-850);
+  box-shadow: var(--ring-ember), 0 0 18px rgba(240, 105, 31, 0.12);
 }
+
+/* ============================================================
+   SWATCHES — v2
+   Staggered entrance, a satisfying pop + double-ring when
+   a color becomes active, like it just came out of the forge.
+   ============================================================ */
 
 .swatches {
   display: grid;
@@ -572,16 +790,47 @@ textarea#editContent:focus {
   border-radius: 50%;
   border: 2px solid var(--gray-700);
   cursor: pointer;
-  transition: transform 0.12s ease, border-color 0.12s ease;
+  transition: transform 0.18s var(--ease-snap), border-color 0.18s ease, box-shadow 0.25s ease;
+  animation: swatchIn 0.3s var(--ease-snap) both;
+}
+
+.swatches .swatch:nth-child(8n+1) { animation-delay: 0.01s; }
+.swatches .swatch:nth-child(8n+2) { animation-delay: 0.03s; }
+.swatches .swatch:nth-child(8n+3) { animation-delay: 0.05s; }
+.swatches .swatch:nth-child(8n+4) { animation-delay: 0.07s; }
+.swatches .swatch:nth-child(8n+5) { animation-delay: 0.09s; }
+.swatches .swatch:nth-child(8n+6) { animation-delay: 0.11s; }
+.swatches .swatch:nth-child(8n+7) { animation-delay: 0.13s; }
+.swatches .swatch:nth-child(8n+8) { animation-delay: 0.15s; }
+
+@keyframes swatchIn {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .swatches .swatch:hover {
-  transform: scale(1.12);
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.swatches .swatch:active {
+  transform: scale(0.9);
 }
 
 .swatches .swatch.active {
   border-color: var(--ember-500);
   box-shadow: 0 0 0 2px var(--gray-900), 0 0 0 3px var(--ember-500);
+  animation: swatchSelect 0.4s var(--ease-snap);
+}
+
+@keyframes swatchSelect {
+  0%   { transform: scale(0.7); }
+  60%  { transform: scale(1.28); }
+  100% { transform: scale(1.12); }
+}
+
+.swatches .swatch.active:hover {
+  transform: scale(1.12);
 }
 
 input[type="color"]#customColor {
@@ -594,6 +843,13 @@ input[type="color"]#customColor {
   padding: 0;
   cursor: pointer;
   background: none;
+  transition: transform 0.18s var(--ease-snap), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="color"]#customColor:hover {
+  transform: scale(1.15) rotate(8deg);
+  border-color: var(--ember-500);
+  box-shadow: 0 0 12px rgba(240, 105, 31, 0.35);
 }
 
 input[type="color"]#customColor::-webkit-color-swatch-wrapper {
@@ -605,6 +861,12 @@ input[type="color"]#customColor::-webkit-color-swatch {
   border: none;
   border-radius: 50%;
 }
+
+/* ============================================================
+   TOGGLE / TOOL BUTTONS — v2
+   Small "forge stamp" press effect: buttons compress slightly
+   and the active state glows like hot metal cooling.
+   ============================================================ */
 
 .toggle-row {
   display: grid;
@@ -622,35 +884,32 @@ input[type="color"]#customColor::-webkit-color-swatch {
   background: var(--gray-800);
   color: var(--gray-400);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.15s var(--ease-snap), box-shadow 0.2s ease;
 }
 
 .toggle-btn:hover {
   border-color: var(--gray-600);
+  color: var(--gray-200);
+  transform: translateY(-1px);
+}
+
+.toggle-btn:active {
+  transform: translateY(0) scale(0.96);
 }
 
 .toggle-btn.active {
   background: linear-gradient(135deg, var(--ember-500), var(--ember-700));
   border-color: var(--ember-600);
   color: #fff8f2;
+  box-shadow: 0 0 12px rgba(240, 105, 31, 0.4);
+  animation: stampSettle 0.3s var(--ease-snap);
 }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
-
-footer {
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--gray-600);
-  letter-spacing: 1px;
-  padding-top: 8px;
+@keyframes stampSettle {
+  0%   { transform: scale(0.9); }
+  60%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
 }
-
-/* ============================================================
-   TOOL BUTTONS (Draw panel)
-   ============================================================ */
 
 .tool-btn {
   font-size: 17px;
@@ -660,7 +919,7 @@ footer {
   background: var(--gray-800);
   color: var(--gray-200);
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s var(--ease-snap), box-shadow 0.15s ease, background 0.15s ease;
   line-height: 1;
   text-align: center;
   user-select: none;
@@ -668,8 +927,12 @@ footer {
 
 .tool-btn:hover {
   border-color: var(--gray-500);
-  transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.tool-btn:active {
+  transform: translateY(0) scale(0.95);
 }
 
 .tool-btn.active {
@@ -678,10 +941,11 @@ footer {
   color: #fff;
   box-shadow: 0 0 0 1px var(--ember-600), 0 4px 14px rgba(240, 105, 31, 0.35);
   transform: translateY(0);
+  animation: stampSettle 0.3s var(--ease-snap);
 }
 
 /* ============================================================
-   FONT SELECT
+   FONT SELECT — v2
    ============================================================ */
 
 .font-select {
@@ -696,13 +960,18 @@ footer {
   cursor: pointer;
   outline: none;
   appearance: auto;
-  transition: border-color 0.18s, box-shadow 0.18s;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, transform 0.15s var(--ease-snap);
 }
 
-.font-select:focus,
 .font-select:hover {
+  border-color: var(--gray-600);
+  background: var(--gray-750, #2c2c30);
+}
+
+.font-select:focus {
   border-color: var(--ember-500);
   box-shadow: var(--ring-ember);
+  transform: translateY(-1px);
 }
 
 .font-select option {
@@ -727,6 +996,7 @@ footer {
 ::-webkit-scrollbar-thumb {
   background: var(--gray-700);
   border-radius: 4px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -764,8 +1034,19 @@ footer {
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  .dot {
-    animation: none;
+  .dot,
+  .panel,
+  .panel::before,
+  .emoji-grid button,
+  .layer-item,
+  .layer-item.active,
+  .swatches .swatch,
+  .swatches .swatch.active,
+  .toggle-btn.active,
+  .tool-btn.active,
+  .empty-hint,
+  .selected-editor {
+    animation: none !important;
   }
 
   * {

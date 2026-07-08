@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -198,7 +198,7 @@
           </div>
         </div>
         <nav class="app-tabs">
-          <a href="meme-generator.html" class="app-tab">🖼️ Image Editor</a>
+          <a href="index.html" class="app-tab">🖼️ Image Editor</a>
           <a href="video-editor.html" class="app-tab active">🎬 Video Editor</a>
         </nav>
       </div>
@@ -230,57 +230,6 @@
         </div>
 
         <div class="section">
-          <div class="section-title">Stickers</div>
-          <div class="emoji-grid" id="emojiGrid"></div>
-        </div>
-
-        <!-- DRAW PANEL -->
-        <div class="section">
-          <div class="section-title">Draw</div>
-
-          <div class="btn-row" style="grid-template-columns: repeat(4, 1fr);">
-            <button class="tool-btn" id="toolPen" data-tool="pen" title="Pen">🖊️</button>
-            <button class="tool-btn" id="toolPencil" data-tool="pencil" title="Pencil">✏️</button>
-            <button class="tool-btn" id="toolHighlighter" data-tool="highlighter" title="Highlighter">🖍️</button>
-            <button class="tool-btn" id="toolBlur" data-tool="blur" title="Blur / Censor">◌</button>
-          </div>
-
-          <label>Brush size <span class="range-val" id="brushSizeVal">6px</span></label>
-          <input type="range" id="brushSizeRange" min="1" max="60" value="6">
-
-          <label>Opacity <span class="range-val" id="brushOpacityVal">100%</span></label>
-          <input type="range" id="brushOpacityRange" min="5" max="100" value="100">
-
-          <label>Color</label>
-          <div class="swatches" id="drawColorSwatches"></div>
-
-          <div class="btn-row" style="margin-top:10px;">
-            <button class="btn small" id="undoStrokeBtn">↩ Undo stroke</button>
-            <button class="btn small" id="clearStrokesBtn">Clear all</button>
-          </div>
-        </div>
-
-        <div class="section">
-          <div class="section-title">Filters</div>
-          <label>Grayscale <span class="range-val" id="grayscaleVal">0%</span></label>
-          <input type="range" id="grayscaleRange" min="0" max="100" value="0">
-
-          <label>Invert <span class="range-val" id="invertVal">0%</span></label>
-          <input type="range" id="invertRange" min="0" max="100" value="0">
-
-          <label>Brightness <span class="range-val" id="brightnessVal">100%</span></label>
-          <input type="range" id="brightnessRange" min="30" max="170" value="100">
-
-          <label>Contrast <span class="range-val" id="contrastVal">100%</span></label>
-          <input type="range" id="contrastRange" min="30" max="200" value="100">
-
-          <div class="btn-row" style="margin-top:14px;">
-            <button class="btn small" id="fullGrayBtn">Full B&W</button>
-            <button class="btn small" id="resetFiltersBtn">Reset</button>
-          </div>
-        </div>
-
-        <div class="section">
           <div class="section-title">Export</div>
           <button class="btn primary" id="downloadBtn">⬇ Export WebM Video</button>
           <div class="export-progress" id="exportProgress">Processing: 0%</div>
@@ -290,6 +239,101 @@
 
       <!-- CENTER: CANVAS & CONTROLS -->
       <div class="panel canvas-area">
+
+        <!-- Tabbed Toolbar -->
+        <div class="center-toolbar">
+          <div class="toolbar-tabs">
+            <button class="toolbar-tab active" data-tab="stickers">🏷️ Stickers</button>
+            <button class="toolbar-tab" data-tab="draw">✏️ Draw</button>
+            <button class="toolbar-tab" data-tab="filters">🎬 Filters</button>
+            <button class="toolbar-tab" data-tab="colors">🎨 Colors</button>
+          </div>
+          <div class="toolbar-content">
+            <!-- Stickers Panel -->
+            <div class="toolbar-panel active" id="tab-stickers">
+              <div class="emoji-grid" id="emojiGrid"></div>
+            </div>
+            
+            <!-- Draw Panel -->
+            <div class="toolbar-panel" id="tab-draw">
+              <div class="draw-toolbar-layout">
+                <div class="draw-col">
+                  <label>Brush Tool</label>
+                  <div class="btn-row" style="grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 12px;">
+                    <button class="tool-btn" id="toolPen" data-tool="pen" title="Pen">🖊️</button>
+                    <button class="tool-btn" id="toolPencil" data-tool="pencil" title="Pencil">✏️</button>
+                    <button class="tool-btn" id="toolHighlighter" data-tool="highlighter" title="Highlighter">🖍️</button>
+                    <button class="tool-btn" id="toolBlur" data-tool="blur" title="Blur / Censor">◌</button>
+                  </div>
+                  <div class="btn-row" style="gap: 6px;">
+                    <button class="btn small" id="undoStrokeBtn">↩ Undo</button>
+                    <button class="btn small" id="clearStrokesBtn">Clear</button>
+                  </div>
+                </div>
+                <div class="draw-col">
+                  <label>Brush Size <span class="range-val" id="brushSizeVal">6px</span></label>
+                  <input type="range" id="brushSizeRange" min="1" max="60" value="6" style="margin-bottom: 14px;">
+
+                  <label>Opacity <span class="range-val" id="brushOpacityVal">100%</span></label>
+                  <input type="range" id="brushOpacityRange" min="5" max="100" value="100">
+                </div>
+                <div class="draw-col">
+                  <label>Brush Color</label>
+                  <div class="swatches" id="drawColorSwatches"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filters Panel -->
+            <div class="toolbar-panel" id="tab-filters">
+              <div class="filters-toolbar-layout">
+                <div class="filter-col">
+                  <label>Grayscale <span class="range-val" id="grayscaleVal">0%</span></label>
+                  <input type="range" id="grayscaleRange" min="0" max="100" value="0">
+
+                  <label style="margin-top: 10px;">Invert <span class="range-val" id="invertVal">0%</span></label>
+                  <input type="range" id="invertRange" min="0" max="100" value="0">
+                </div>
+                <div class="filter-col">
+                  <label>Brightness <span class="range-val" id="brightnessVal">100%</span></label>
+                  <input type="range" id="brightnessRange" min="30" max="170" value="100">
+
+                  <label style="margin-top: 10px;">Contrast <span class="range-val" id="contrastVal">100%</span></label>
+                  <input type="range" id="contrastRange" min="30" max="200" value="100">
+                </div>
+                <div class="filter-full-width">
+                  <div class="btn-row" style="margin-top: 12px; gap: 8px;">
+                    <button class="btn small" id="fullGrayBtn">Full B&W</button>
+                    <button class="btn small" id="resetFiltersBtn">Reset Filters</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Colors Panel (Selected Layer) -->
+            <div class="toolbar-panel" id="tab-colors">
+              <div id="toolbarColorPlaceholder" class="no-layer-selected-hint">
+                Select a text or sticker layer to customize its color
+              </div>
+              <div id="toolbarColorControls" style="display: none;">
+                <div class="color-toolbar-layout">
+                  <div class="color-col">
+                    <label>Layer Swatches</label>
+                    <div class="swatches" id="colorSwatches"></div>
+                  </div>
+                  <div class="color-col custom-color-col">
+                    <label>Custom Color</label>
+                    <div class="custom-color-picker-wrapper">
+                      <input type="color" id="customColor" value="#ffffff">
+                      <span id="customColorHex">#ffffff</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="canvas-frame" style="aspect-ratio: 16/9; max-width: 640px; height: auto;">
           <div class="corner-tl"></div>
           <div class="corner-br"></div>
@@ -297,8 +341,7 @@
           <canvas id="memeCanvas" width="640" height="360"></canvas>
           <div class="empty-hint" id="emptyHint">UPLOAD A VIDEO TO START EDITING</div>
         </div>
-        <div class="canvas-caption" style="max-width: 640px;">drag text or stickers to position them. activate drawing
-          tools to paint.</div>
+        <div class="canvas-caption" style="max-width: 640px;">drag text or stickers to position them. activate drawing tools to paint.</div>
 
         <!-- Playback Controls -->
         <div class="video-controls">
@@ -344,14 +387,6 @@
           <label>Rotation <span class="range-val" id="rotationVal"></span></label>
           <input type="range" id="rotationRange" min="-45" max="45" value="0">
 
-          <label>Color</label>
-          <div class="swatches" id="colorSwatches"></div>
-
-          <label style="display:flex; align-items:center; justify-content:space-between;">
-            Custom
-            <input type="color" id="customColor" value="#ffffff">
-          </label>
-
           <label>Font Family</label>
           <select id="fontFamilySelect" class="font-select"></select>
 
@@ -369,6 +404,19 @@
     <footer>MEMEFORGE — everything renders locally in your browser</footer>
   </div>
 
+  <script>
+    // Tab switching logic for center toolbar
+    document.querySelectorAll('.toolbar-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const parent = tab.closest('.center-toolbar');
+        parent.querySelectorAll('.toolbar-tab').forEach(t => t.classList.remove('active'));
+        parent.querySelectorAll('.toolbar-panel').forEach(p => p.classList.remove('active'));
+        
+        tab.classList.add('active');
+        const targetPanel = parent.querySelector(`#tab-${tab.dataset.tab}`);
+        if (targetPanel) targetPanel.classList.add('active');
+      });
+    });
+  </script>
 </body>
-
 </html>
