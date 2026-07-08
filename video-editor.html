@@ -189,22 +189,38 @@
 <body>
   <div class="app">
 
-    <header>
-      <div class="brand-group">
-        <div class="brand">
-          <img src="favicon.png" alt="MemeGenie" class="brand-logo">
-          <div>
-            <h1>MemeGenie</h1>
-            <div class="eyebrow">grayscale meme workbench</div>
-          </div>
-        </div>
-        <nav class="app-tabs">
-          <a href="index.html" class="app-tab">🖼️ Image Editor</a>
-          <a href="video-editor.html" class="app-tab active">🎬 Video Editor</a>
-        </nav>
+<header>
+  <div class="brand-group">
+    <div class="brand">
+      <img src="favicon.png" alt="MemeGenie" class="brand-logo">
+      <div>
+        <h1>MemeGenie</h1>
+        <div class="eyebrow">grayscale meme workbench</div>
       </div>
-      <div class="headline-right"><span class="dot"></span> CANVAS-BASED · NO UPLOAD LEAVES YOUR BROWSER</div>
-    </header>
+    </div>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="app-tabs" id="appTabs">
+      <a href="index.html" class="app-tab">🖼️ Image Editor</a>
+      <a href="video-editor.html" class="app-tab active">🎬 Video Editor</a>
+    </nav>
+  </div>
+
+  <div class="headline-right"><span class="dot"></span> CANVAS-BASED · NO UPLOAD LEAVES YOUR BROWSER</div>
+</header>
+
+<script>
+  document.getElementById('navToggle').addEventListener('click', () => {
+    const nav = document.getElementById('appTabs');
+    const btn = document.getElementById('navToggle');
+    const open = nav.classList.toggle('open');
+    btn.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open);
+  });
+</script>
 
     <div class="layout">
 
