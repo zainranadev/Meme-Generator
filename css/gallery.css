@@ -1,0 +1,111 @@
+/* css/gallery.css — Template Gallery Component */
+
+@media (min-width: 1101px) {
+  .layout {
+    grid-template-columns: 320px 280px 1fr 300px !important;
+  }
+}
+
+.templates-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-top: 10px;
+}
+
+.template-card {
+  position: relative;
+  background: var(--gray-900);
+  border: 1px solid var(--gray-800);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease-forge), border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.template-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ember-500);
+  box-shadow: 0 4px 12px rgba(132, 204, 22, 0.15);
+}
+
+.template-thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #111;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.template-card:hover .template-thumbnail {
+  transform: scale(1.06);
+}
+
+.template-name {
+  padding: 8px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--gray-300);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  background: var(--gray-950);
+  border-top: 1px solid var(--gray-850);
+}
+
+/* Pulsing Skeleton Loaders */
+.template-card.skeleton {
+  pointer-events: none;
+  border-color: var(--gray-850);
+}
+
+.skeleton-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(90deg, var(--gray-900) 25%, var(--gray-850) 50%, var(--gray-900) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s infinite linear;
+}
+
+.skeleton-text {
+  height: 12px;
+  margin: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--gray-900) 25%, var(--gray-850) 50%, var(--gray-900) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s infinite linear;
+}
+
+@keyframes skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty states / helpers */
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 24px 8px;
+  color: var(--gray-500);
+  font-family: var(--font-body);
+  font-size: 13px;
+  border: 1px dashed var(--gray-800);
+  border-radius: var(--radius-md);
+}
