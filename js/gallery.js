@@ -48,6 +48,17 @@
                 </div>
                 <div class="template-name">${t.name}</div>
             `;
+            
+            // Wire click event to load template base image
+            card.addEventListener('click', () => {
+                if (window.MemeGenie_setBaseImage) {
+                    card.style.opacity = '0.5';
+                    window.MemeGenie_setBaseImage(t.image, () => {
+                        card.style.opacity = '1.0';
+                    });
+                }
+            });
+
             galleryContainer.appendChild(card);
         });
     }

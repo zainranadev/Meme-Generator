@@ -66,18 +66,8 @@
     }
 
     function drawImageCover(img) {
-        const cw = canvas.width, ch = canvas.height;
-        const ir = img.width / img.height;
-        const cr = cw / ch;
-        let sx, sy, sw, sh;
-        if (ir > cr) {
-            sh = img.height; sw = sh * cr;
-            sx = (img.width - sw) / 2; sy = 0;
-        } else {
-            sw = img.width; sh = sw / cr;
-            sx = 0; sy = (img.height - sh) / 2;
-        }
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
+        // Draw the full image across the entire canvas since the canvas is resized to match its aspect ratio
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     }
 
     function drawLayer(layer) {
@@ -428,6 +418,52 @@
     canvas.addEventListener('touchmove', pointerMove, { passive: true });
     window.addEventListener('touchend', pointerUp);
 
+    // ---------- Core Image loader ----------
+    function loadBaseImage(img) {
+        baseImage = img;
+
+        // Resize canvas to match image aspect ratio, bounding it to max 600px
+        const maxBound = 600;
+        if (img.width > img.height) {
+            canvas.width = maxBound;
+            canvas.height = Math.round(maxBound * (img.height / img.width));
+        } else {
+            canvas.height = maxBound;
+            canvas.width = Math.round(maxBound * (img.width / img.height));
+        }
+
+        // Adjust canvas visual width in styles to keep responsive layout working
+        canvas.style.width = '100%';
+        canvas.style.height = 'auto';
+
+        // Synchronize drawing overlay canvas if it exists
+        const overlay = window.MemeGenie_DRAW_OVERLAY || document.getElementById('drawOverlay');
+        if (overlay) {
+            overlay.width = canvas.width;
+            overlay.height = canvas.height;
+            const octx = overlay.getContext('2d');
+            octx.clearRect(0, 0, overlay.width, overlay.height);
+        }
+
+        // Clear existing text/sticker layers for the new template
+        layers = [];
+        selectedId = null;
+        refreshLayerList();
+
+        render();
+    }
+
+    // Expose baseImage loader globally for template library integration
+    window.MemeGenie_setBaseImage = function (src, callback) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous'; // prevent CORS canvas taint issues
+        img.onload = () => {
+            loadBaseImage(img);
+            if (callback) callback();
+        };
+        img.src = src;
+    };
+
     // ---------- Image upload ----------
     const fileInput = document.getElementById('fileInput');
     document.getElementById('uploadBtn').addEventListener('click', () => fileInput.click());
@@ -437,7 +473,7 @@
         const reader = new FileReader();
         reader.onload = (ev) => {
             const img = new Image();
-            img.onload = () => { baseImage = img; render(); };
+            img.onload = () => { loadBaseImage(img); };
             img.src = ev.target.result;
         };
         reader.readAsDataURL(file);
