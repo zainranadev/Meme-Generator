@@ -264,33 +264,34 @@
         render(); syncEditor();
     });
 
-const PALETTE = [
-  // grayscale
-  '#ffffff', '#e5e5e5', '#d4d4d4', '#b5b5b5', '#8a8a8a', '#5c5c5c', '#2e2e2e', '#000000',
-  // reds
-  '#ff3b3b', '#e01e37', '#b0000f', '#7a0d0d',
-  // oranges
-  '#ff8c3d', '#f0691f', '#d9541a', '#b0430f',
-  // yellows
-  '#fff176', '#ffd93d', '#ffb800', '#e6a400',
-  // greens
-  '#b6ff5c', '#7ed957', '#3fae44', '#1e6b2e', '#0d3b13',
-  // teals / cyans
-  '#5cf0e0', '#26c6c2', '#0e8f8c', '#065450',
-  // blues
-  '#5cb8ff', '#3080f0', '#1a56b0', '#0d2f66',
-  // purples
-  '#c98cff', '#9c4dff', '#6a1fbd', '#3d0e6e',
-  // pinks / magentas
-  '#ff8cd9', '#ff4dc4', '#e0189a', '#99005c',
-  // browns / earth tones
-  '#c9a066', '#a5713e', '#7a4a24', '#4d2e14',
-  // pastels (for a softer meme style)
-  '#ffe0e0', '#fff3d6', '#e0ffe0', '#d6f5ff', '#e6d6ff', '#ffd6ec',
-  // metallics / accents
-  '#ffd700', '#c0c0c0', '#cd7f32'
-];
+    const PALETTE = [
+        // grayscale
+        '#ffffff', '#e5e5e5', '#d4d4d4', '#b5b5b5', '#8a8a8a', '#5c5c5c', '#2e2e2e', '#000000',
+        // reds
+        '#ff3b3b', '#e01e37', '#b0000f', '#7a0d0d',
+        // oranges
+        '#ff8c3d', '#f0691f', '#d9541a', '#b0430f',
+        // yellows
+        '#fff176', '#ffd93d', '#ffb800', '#e6a400',
+        // greens
+        '#b6ff5c', '#7ed957', '#3fae44', '#1e6b2e', '#0d3b13',
+        // teals / cyans
+        '#5cf0e0', '#26c6c2', '#0e8f8c', '#065450',
+        // blues
+        '#5cb8ff', '#3080f0', '#1a56b0', '#0d2f66',
+        // purples
+        '#c98cff', '#9c4dff', '#6a1fbd', '#3d0e6e',
+        // pinks / magentas
+        '#ff8cd9', '#ff4dc4', '#e0189a', '#99005c',
+        // browns / earth tones
+        '#c9a066', '#a5713e', '#7a4a24', '#4d2e14',
+        // pastels (for a softer meme style)
+        '#ffe0e0', '#fff3d6', '#e0ffe0', '#d6f5ff', '#e6d6ff', '#ffd6ec',
+        // metallics / accents
+        '#ffd700', '#c0c0c0', '#cd7f32'
+    ];
     // Expose palette for the draw-tools module script
+    window.MemeGenie_PALETTE = PALETTE;
     window.MEMEFORGE_PALETTE = PALETTE;
     PALETTE.forEach(c => {
         const sw = document.createElement('div');
@@ -527,13 +528,13 @@ const PALETTE = [
         selectedId = null; // hide selection box for export
         render();
         const link = document.createElement('a');
-        link.download = 'memeforge-export.png';
+        link.download = 'MemeGenie-export.png';
 
         // Composite the draw overlay (if any) onto the exported image
         const overlay = document.getElementById('drawOverlay');
         if (overlay) {
             const tmp = document.createElement('canvas');
-            tmp.width  = canvas.width;
+            tmp.width = canvas.width;
             tmp.height = canvas.height;
             const tctx = tmp.getContext('2d');
             tctx.drawImage(canvas, 0, 0);
@@ -551,8 +552,32 @@ const PALETTE = [
     // ---------- Init ----------
     // Preload all font families so canvas renders correctly
     Promise.all(
-        FONT_FAMILIES.map(f => document.fonts.load(`400 46px '${f}'`).catch(() => {}))
+        FONT_FAMILIES.map(f => document.fonts.load(`400 46px '${f}'`).catch(() => { }))
     ).then(render).catch(render);
     syncFilterUI();
     render();
 })();
+
+
+
+const tabs = document.querySelectorAll(".toolbar-tab");
+
+const contents = document.querySelectorAll(".tab-content");
+
+tabs.forEach(tab => {
+
+    tab.addEventListener("click", () => {
+
+        tabs.forEach(t => t.classList.remove("active"));
+
+        contents.forEach(c => c.classList.remove("active"));
+
+        tab.classList.add("active");
+
+        document
+            .getElementById(tab.dataset.tab)
+            .classList.add("active");
+
+    });
+
+});

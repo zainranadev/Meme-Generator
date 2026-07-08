@@ -1,4 +1,4 @@
-﻿// ============================================================
+// ============================================================
 //  draw-tools.js — freehand drawing overlay module
 //  Exports: DRAW_TOOLS, initDrawTools, setActiveTool,
 //           setDrawColor, setDrawSize, setDrawOpacity,
@@ -14,17 +14,17 @@ export const DRAW_TOOLS = {
 };
 
 let overlayCanvas = null;
-let overlayCtx   = null;
+let overlayCtx = null;
 let mainCanvasRef = null;
 
-let activeTool  = 'none';
-let drawColor   = '#ff3b3b';
-let drawSize    = 6;
+let activeTool = 'none';
+let drawColor = '#ff3b3b';
+let drawSize = 6;
 let drawOpacity = 1.0;
 
 // undo stack — each entry is an ImageData snapshot taken before a stroke starts
-let snapshots  = [];
-let isDrawing  = false;
+let snapshots = [];
+let isDrawing = false;
 let lastX = 0, lastY = 0;
 
 // -------------------------------------------------------
@@ -34,8 +34,8 @@ export function initDrawTools(mainCanvas) {
   mainCanvasRef = mainCanvas;
 
   overlayCanvas = document.createElement('canvas');
-  overlayCanvas.id     = 'drawOverlay';
-  overlayCanvas.width  = mainCanvas.width;
+  overlayCanvas.id = 'drawOverlay';
+  overlayCanvas.width = mainCanvas.width;
   overlayCanvas.height = mainCanvas.height;
   overlayCanvas.style.cssText =
     'position:absolute;top:0;left:0;width:100%;height:100%;' +
@@ -50,14 +50,15 @@ export function initDrawTools(mainCanvas) {
 
   overlayCtx = overlayCanvas.getContext('2d');
 
-  overlayCanvas.addEventListener('mousedown',  _onDown);
-  overlayCanvas.addEventListener('mousemove',  _onMove);
-  window.addEventListener('mouseup',           _onUp);
+  overlayCanvas.addEventListener('mousedown', _onDown);
+  overlayCanvas.addEventListener('mousemove', _onMove);
+  window.addEventListener('mouseup', _onUp);
   overlayCanvas.addEventListener('touchstart', _onDown, { passive: false });
-  overlayCanvas.addEventListener('touchmove',  _onMove, { passive: false });
-  window.addEventListener('touchend',          _onUp);
+  overlayCanvas.addEventListener('touchmove', _onMove, { passive: false });
+  window.addEventListener('touchend', _onUp);
 
   // Bridge for non-module code (download compositing)
+  window.MemeGenie_DRAW_OVERLAY = overlayCanvas;
   window.MEMEFORGE_DRAW_OVERLAY = overlayCanvas;
 
   return overlayCanvas;
@@ -75,11 +76,11 @@ export function setActiveTool(tool) {
   if (!overlayCanvas) return;
   const active = isDrawToolActive();
   overlayCanvas.style.pointerEvents = active ? 'auto' : 'none';
-  overlayCanvas.style.cursor        = active ? 'crosshair' : 'default';
+  overlayCanvas.style.cursor = active ? 'crosshair' : 'default';
 }
 
-export function setDrawColor(hex)   { drawColor   = hex; }
-export function setDrawSize(px)     { drawSize    = Math.max(1, px); }
+export function setDrawColor(hex) { drawColor = hex; }
+export function setDrawSize(px) { drawSize = Math.max(1, px); }
 export function setDrawOpacity(val) { drawOpacity = Math.min(1, Math.max(0, val)); }
 
 // -------------------------------------------------------
@@ -99,13 +100,13 @@ export function clearStrokes() {
 //  Event handlers
 // -------------------------------------------------------
 function _getPos(evt) {
-  const rect   = overlayCanvas.getBoundingClientRect();
-  const scaleX = overlayCanvas.width  / rect.width;
+  const rect = overlayCanvas.getBoundingClientRect();
+  const scaleX = overlayCanvas.width / rect.width;
   const scaleY = overlayCanvas.height / rect.height;
-  const src    = evt.touches ? evt.touches[0] : evt;
+  const src = evt.touches ? evt.touches[0] : evt;
   return {
     x: (src.clientX - rect.left) * scaleX,
-    y: (src.clientY - rect.top)  * scaleY
+    y: (src.clientY - rect.top) * scaleY
   };
 }
 
@@ -143,36 +144,36 @@ function _onUp() { isDrawing = false; }
 //  Drawing primitives
 // -------------------------------------------------------
 function _applyStyle(ctx) {
-  ctx.lineCap  = 'round';
+  ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  ctx.filter   = 'none';
+  ctx.filter = 'none';
   ctx.globalCompositeOperation = 'source-over';
 
   switch (activeTool) {
     case 'pen':
       ctx.globalAlpha = drawOpacity;
       ctx.strokeStyle = drawColor;
-      ctx.fillStyle   = drawColor;
-      ctx.lineWidth   = drawSize;
+      ctx.fillStyle = drawColor;
+      ctx.lineWidth = drawSize;
       break;
     case 'pencil':
       ctx.globalAlpha = Math.min(drawOpacity * 0.55, 0.55);
       ctx.strokeStyle = drawColor;
-      ctx.fillStyle   = drawColor;
-      ctx.lineWidth   = Math.max(1, drawSize * 0.55);
+      ctx.fillStyle = drawColor;
+      ctx.lineWidth = Math.max(1, drawSize * 0.55);
       break;
     case 'highlighter':
       ctx.globalAlpha = Math.min(drawOpacity * 0.38, 0.38);
       ctx.strokeStyle = drawColor;
-      ctx.fillStyle   = drawColor;
-      ctx.lineWidth   = drawSize * 3;
-      ctx.lineCap     = 'square';
+      ctx.fillStyle = drawColor;
+      ctx.lineWidth = drawSize * 3;
+      ctx.lineCap = 'square';
       break;
     default:
       ctx.globalAlpha = drawOpacity;
       ctx.strokeStyle = drawColor;
-      ctx.fillStyle   = drawColor;
-      ctx.lineWidth   = drawSize;
+      ctx.fillStyle = drawColor;
+      ctx.lineWidth = drawSize;
   }
 }
 
@@ -203,22 +204,22 @@ function _paintLine(x1, y1, x2, y2) {
  * the result back onto the overlay.
  */
 function _applyBlur(cx, cy) {
-  const r       = drawSize * 3;
+  const r = drawSize * 3;
   const pixSize = Math.max(4, Math.floor(drawSize / 1.5));
 
   const sx = Math.max(0, Math.floor(cx - r));
   const sy = Math.max(0, Math.floor(cy - r));
-  const sw = Math.min(overlayCanvas.width  - sx, Math.ceil(r * 2));
+  const sw = Math.min(overlayCanvas.width - sx, Math.ceil(r * 2));
   const sh = Math.min(overlayCanvas.height - sy, Math.ceil(r * 2));
   if (sw <= 0 || sh <= 0) return;
 
-  const tmp  = _offscreen(sw, sh);
+  const tmp = _offscreen(sw, sh);
   const tctx = tmp.ctx;
   tctx.drawImage(mainCanvasRef, sx, sy, sw, sh, 0, 0, sw, sh);
   tctx.drawImage(overlayCanvas, sx, sy, sw, sh, 0, 0, sw, sh);
 
-  const pixW  = Math.max(1, Math.ceil(sw / pixSize));
-  const pixH  = Math.max(1, Math.ceil(sh / pixSize));
+  const pixW = Math.max(1, Math.ceil(sw / pixSize));
+  const pixH = Math.max(1, Math.ceil(sh / pixSize));
   const small = _offscreen(pixW, pixH);
   small.ctx.imageSmoothingEnabled = true;
   small.ctx.drawImage(tmp.el, 0, 0, pixW, pixH);
@@ -237,8 +238,8 @@ function _applyBlur(cx, cy) {
 }
 
 function _offscreen(w, h) {
-  const el  = document.createElement('canvas');
-  el.width  = w;
+  const el = document.createElement('canvas');
+  el.width = w;
   el.height = h;
   return { el, ctx: el.getContext('2d') };
 }

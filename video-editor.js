@@ -578,7 +578,7 @@
     // ---------- Draw controls panel wiring ----------
     const drawSwatchContainer = document.getElementById('drawColorSwatches');
     let activeDrawHex = PALETTE[8]; // default red
-    
+
     PALETTE.slice(0, 16).forEach(hex => {
         const sw = document.createElement('div');
         sw.className = 'swatch' + (hex === activeDrawHex ? ' active' : '');
@@ -864,13 +864,13 @@
         videoEl.pause();
         playPauseBtn.textContent = '▶';
         isPlaying = false;
-        
+
         // Hide selection box
         const prevSelected = selectedId;
         selectedId = null;
 
         videoEl.currentTime = trimStart;
-        
+
         // Capture canvas stream at 30 fps
         const stream = canvas.captureStream(30);
 
@@ -900,7 +900,7 @@
             const blob = new Blob(chunks, { type: mimeType });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.download = 'memeforge-video-export.webm';
+            link.download = 'MemeGenie-video-export.webm';
             link.href = url;
             link.click();
 
@@ -943,7 +943,7 @@
 
     // ---------- Init ----------
     Promise.all(
-        FONT_FAMILIES.map(f => document.fonts.load(`400 46px '${f}'`).catch(() => {}))
+        FONT_FAMILIES.map(f => document.fonts.load(`400 46px '${f}'`).catch(() => { }))
     ).then(render).catch(render);
 
     syncFilterUI();
